@@ -88,18 +88,63 @@ def graph1(self):
     conn = sqlite3.connect('fut_stat.db')
     c = conn.cursor()
 
-    c.execute("SELECT userscore FROM gamestats")
+    c.execute("SELECT *, oid FROM gamestats")
     entries = c.fetchall()
+    
+    scoregraph = []
+    scoregraphopp = []
+    modedata = []
+    extratimedata = []
+    penplayed = []
+    penscore = []
+    penscoreopp = []
+    hiedata = []
+    resultdata = []
     
     p =''
     for x in entries:
-        p += str(x) 
-    print(type(p))
-    
+        info = str(x).replace(')','').replace('(','').replace('u\'','').replace("'","")
+        infosplit = info.split(',')
+        scoreappend = infosplit[0] 
+        scoreappendopp = infosplit[1]
+        modeappend = infosplit[2]
+        etappend = infosplit[3]
+        penplayeddata = infosplit[4]
+        penscoreappend = infosplit[5]
+        penscoreoppappend = infosplit[6]
+        wltappend = infosplit[7]
+        wolappend = infosplit[8]
+
+        #scoredata.append(scoreappend)
+        scoregraph.append(scoreappend)
+        scoregraphopp.append(scoreappendopp)
+        modedata.append(modeappend)
+        extratimedata.append(etappend)
+        penplayed.append(penplayeddata)
+        penscore.append(penscoreappend)
+        penscoreopp.append(penscoreoppappend)
+        hiedata.append(wltappend)
+        resultdata.append(wolappend)
+        
+    print(scoregraph)
+    print(scoregraphopp)
+    print(modedata)
+    print(extratimedata)
+    print(penplayed)
+    print(penscore)
+    print(penscoreopp)
+    print(hiedata)
+    print(resultdata)
+    #c.execute("SELECT oppscore FROM gamestats")
+    #use = c.fetchall()    
+
+    #graph = list(filter(("").__ne__,graph))
+
     o = graphseleted.get()
-    if o == "Goal":
-        plt.hist(p)
-        plt.show()
+    #if o == "Goal":
+        #newg = [int(i) for i in graph]
+        #plt.bar(newg)
+        #plt.show()
 
     conn.commit()
     conn.close()
