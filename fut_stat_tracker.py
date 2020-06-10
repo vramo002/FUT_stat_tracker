@@ -2,7 +2,8 @@ from tkinter import *
 import sqlite3
 import numpy as np
 import matplotlib.pyplot as plt
-
+from tkinter import messagebox
+import sys
 
 root = Tk()
 root.title('FUT Stat Traker')
@@ -23,6 +24,17 @@ c.execute("""CREATE TABLE IF NOT EXISTS gamestats (
          )""")
 
 def submit():
+    
+    try:
+        int(iuserscore.get())
+        int(opponetscore.get())
+        if pen.get() == 1:
+            int(penuserscore.get())
+            int(penoppscore.get())
+    except:
+        messagebox.showinfo("WARNING","INVALID ENTRY")
+        return
+    
     conn = sqlite3.connect('fut_stat.db')
     c = conn.cursor()
     
@@ -126,25 +138,30 @@ def graph1(self):
         hiedata.append(wltappend)
         resultdata.append(wolappend)
         
-    print(scoregraph)
-    print(scoregraphopp)
-    print(modedata)
-    print(extratimedata)
-    print(penplayed)
-    print(penscore)
-    print(penscoreopp)
-    print(hiedata)
-    print(resultdata)
+    #print(scoregraph)
+    #print(scoregraphopp)
+    #print(modedata)
+    #print(extratimedata)
+    #print(penplayed)
+    #print(penscore)
+    #print(penscoreopp)
+    #print(hiedata)
+    #print(resultdata)
     #c.execute("SELECT oppscore FROM gamestats")
     #use = c.fetchall()    
 
     #graph = list(filter(("").__ne__,graph))
 
     o = graphseleted.get()
-    #if o == "Goal":
-        #newg = [int(i) for i in graph]
-        #plt.bar(newg)
+    if o == "Goal":
+        newg = [int(i) for i in scoregraph]
+        newop = [int(j) for j in scoregraphopp]
+        #arr = np.array((newg,newop))
+        #plt.imshow(arr,cmap='hot',interpolation='nearest')
         #plt.show()
+        #plt.hist2d(newg,newop,cmap='hot',bins=(10,5))
+        plt.hist(newg)
+        plt.show()
 
     conn.commit()
     conn.close()
