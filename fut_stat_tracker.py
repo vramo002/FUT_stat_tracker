@@ -31,6 +31,14 @@ def submit():
         if pen.get() == 1:
             int(penuserscore.get())
             int(penoppscore.get())
+        elif pen.get() == 0:
+            if penuserscore.get() or penoppscore.get():
+                messagebox.showinfo("WARNING", "INVALID ENTRY")
+                int(penuserscore.get())
+                int(penoppscore.get())
+                return
+            
+            
     except:
         messagebox.showinfo("WARNING","INVALID ENTRY")
         return
@@ -154,15 +162,54 @@ def graph1(self):
 
     o = graphseleted.get()
     if o == "Goal":
+        plt.close()
         newg = [int(i) for i in scoregraph]
         newop = [int(j) for j in scoregraphopp]
         #arr = np.array((newg,newop))
         #plt.imshow(arr,cmap='hot',interpolation='nearest')
         #plt.show()
         #plt.hist2d(newg,newop,cmap='hot',bins=(10,5))
-        plt.hist(newg)
+        f, (ax1, ax2) = plt.subplots(1,2)
+        labels, counts = np.unique(newg,return_counts=True)
+        labels2, counts2 = np.unique(newop,return_counts=True)
+        ax1.bar(labels,counts,align='center')
+        ax2.bar(labels2,counts2,align='center')
+        plt.gca().set_xticks(labels)
+        ax1.set(xlabel='Goals Score',ylabel='# of games')  
+        ax2.set(xlabel='Goals Score',ylabel='# of games')
+        ax1.set_title("My Goals")
+        ax2.set_title("Opponents Goals")
         plt.show()
-
+    elif o == "% Mode Played":
+        plt.close()
+        wl = 0
+        r = 0
+        for a in modedata:
+            if a == " WL":
+                wl = wl + 1
+            elif a == " Rivals":
+                r = r + 1
+        labels = 'WL', 'Rivals'
+        arr = np.array([wl,r])
+        plt.pie(arr,labels=labels, autopct='%1.1f%%')
+        plt.show()
+    elif o == "W/L/T Ratio":
+        plt.close()
+        w = 0
+        l = 0
+        t = 0
+        for a in resultdata:
+            if a == " Win":
+                w = w + 1
+            elif a == " Lose":
+                l = l + 1
+            elif a == " Tie":
+                t = t + 1
+        labels = 'WIN', 'LOSE', 'TIE'
+        arr = np.array([w,l,t])
+        plt.pie(arr,labels=labels, autopct='%1.1f%%')
+        plt.show()
+    
     conn.commit()
     conn.close()
     
@@ -224,7 +271,7 @@ delete_lastrecourd.grid(row=4,column=1)
 
 graphseleted = StringVar()
 graphseleted.set("Select Data to Graph")
-grhsel=OptionMenu(root, graphseleted, "Goal", "Record", "WL",command=graph1)
+grhsel=OptionMenu(root, graphseleted, "Goal", "% Mode Played", "W/L/T Ratio",command=graph1)
 grhsel.grid(row=5,column=0)
 
 conn.commit()
