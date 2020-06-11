@@ -8,9 +8,10 @@ import sys
 root = Tk()
 root.title('FUT Stat Traker')
 
+#creating and connecting to the database
 conn = sqlite3.connect('fut_stat.db')
 c = conn.cursor()
-
+#create the table for the database
 c.execute("""CREATE TABLE IF NOT EXISTS gamestats (
          userscore integer,
          oppscore integer,
@@ -22,9 +23,9 @@ c.execute("""CREATE TABLE IF NOT EXISTS gamestats (
          hie text,
          result text
          )""")
-
+#function for when the submit button is pressed
 def submit():
-    
+    #handle some errors so the user does not enter invalid data
     try:
         int(iuserscore.get())
         int(opponetscore.get())
@@ -45,7 +46,7 @@ def submit():
     
     conn = sqlite3.connect('fut_stat.db')
     c = conn.cursor()
-    
+    #get all the data from user and enter it to the database
     c.execute("INSERT INTO gamestats VALUES (:A,:B,:C,:D,:E,:F,:G,:H,:I)",
             {
                 'A':iuserscore.get(),
@@ -61,7 +62,7 @@ def submit():
 
     conn.commit()
     conn.close()
-    #clear
+    #clear the data after the user submit it
     iuserscore.delete(0,END)
     opponetscore.delete(0,END)
     clickedresult.set("Win")
@@ -71,7 +72,7 @@ def submit():
     penuserscore.delete(0,END)
     penoppscore.delete(0,END)
     gameend.set("Normal")
-
+#function for when the show button is press it show everything in the database
 def show():
     conn = sqlite3.connect('fut_stat.db')
     c = conn.cursor()
@@ -88,7 +89,7 @@ def show():
 
     conn.commit()
     conn.close()
-
+#function to delete the last entry on the database
 def delete():
     conn = sqlite3.connect('fut_stat.db')
     c = conn.cursor()
@@ -103,7 +104,7 @@ def delete():
     
     conn.commit()
     conn.close()
-
+#function to popup the grpah the user wants
 def graph1(self):
     conn = sqlite3.connect('fut_stat.db')
     c = conn.cursor()
@@ -120,7 +121,7 @@ def graph1(self):
     penscoreopp = []
     hiedata = []
     resultdata = []
-    
+    #getting all the data from the database and seperating it 
     p =''
     for x in entries:
         info = str(x).replace(')','').replace('(','').replace('u\'','').replace("'","")
@@ -135,10 +136,7 @@ def graph1(self):
         wltappend = infosplit[7]
         wolappend = infosplit[8]
 
-        #penscoreappend = list(filter(("").__ne__,penscoreappend))
-        #penscoreoppappend = list(filter(("").__ne__,penscoreoppappend))
 
-        #scoredata.append(scoreappend)
         scoregraph.append(scoreappend)
         scoregraphopp.append(scoreappendopp)
         modedata.append(modeappend)
@@ -153,29 +151,13 @@ def graph1(self):
         penscore = list(filter(("").__ne__,penscore))
         penscoreopp = list(filter(("").__ne__,penscoreopp))
         
-    #print(scoregraph)
-    #print(scoregraphopp)
-    #print(modedata)
-    #print(extratimedata)
-    #print(penplayed)
-    #print(penscore)
-    #print(penscoreopp)
-    #print(hiedata)
-    #print(resultdata)
-    #c.execute("SELECT oppscore FROM gamestats")
-    #use = c.fetchall()    
-
-    #graph = list(filter(("").__ne__,graph))
-
+    #get the user choice 
     o = graphseleted.get()
+    #displays a bar graphs for ech the users goals score in each game and also the opponents
     if o == "Goals":
         plt.close()
         newg = [int(i) for i in scoregraph]
         newop = [int(j) for j in scoregraphopp]
-        #arr = np.array((newg,newop))
-        #plt.imshow(arr,cmap='hot',interpolation='nearest')
-        #plt.show()
-        #plt.hist2d(newg,newop,cmap='hot',bins=(10,5))
         f, (ax1, ax2) = plt.subplots(1,2)
         labels, counts = np.unique(newg,return_counts=True)
         labels2, counts2 = np.unique(newop,return_counts=True)
@@ -187,6 +169,7 @@ def graph1(self):
         ax1.set_title("My Goals")
         ax2.set_title("Opponents Goals")
         plt.show()
+    #displays a pie graph with the % of each mode the user played
     elif o == "% Mode Played":
         plt.close()
         wl = 0
@@ -200,6 +183,7 @@ def graph1(self):
         arr = np.array([wl,r])
         plt.pie(arr,labels=labels, autopct='%1.1f%%')
         plt.show()
+    #display a pie graph with the % of the WIN LOSE AND TIE
     elif o == "W/L/T Ratio":
         plt.close()
         w = 0
@@ -216,6 +200,7 @@ def graph1(self):
         arr = np.array([w,l,t])
         plt.pie(arr,labels=labels, autopct='%1.1f%%')
         plt.show()
+    #display same as goals but for pens
     elif o == "Pens":
         plt.close()
         newpen = [int(i) for i in penscore]
@@ -231,6 +216,7 @@ def graph1(self):
         ax1.set_title("My Pens Goals")
         ax2.set_title("Opponents Pens Goals")
         plt.show()
+    #diplay the % of how the game ended 
     elif o == "How it Ended":
         plt.close()
         n = 0
@@ -251,10 +237,7 @@ def graph1(self):
     conn.commit()
     conn.close()
     
-
-#title = Label(root, text="Fut Stat Traker")
-#title.grid(row=0, column=0,columnspan=4)
-
+#create all the labels, entries, buttons, checkboxs, and dropdown menus 
 titlescore = Label(root, text="Score: ")
 titlescore.grid(row=1, column=0)
 ct = Label(root, text = " : ").grid(row=1, column=2)
